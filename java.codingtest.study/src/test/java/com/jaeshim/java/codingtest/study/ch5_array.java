@@ -1,4 +1,4 @@
-package com.jaeshim.java.codingtest.study.ch5;
+package com.jaeshim.java.codingtest.study;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -6,10 +6,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.logging.log4j.util.PropertySource;
 import org.junit.jupiter.api.Test;
 
-class ch5_01_sort {
+class ch5_array {
 
     @Test
     void p1() {
@@ -170,6 +169,112 @@ class ch5_01_sort {
         return result;
     }
 
+    @Test
+    void p6() {
+//        int N = 5;
+//        int[] stages = {2, 1, 2, 6, 2, 4, 3, 3};
+//        int[] expect = {3,4,2,1,5};
 
+        int N = 4;
+        int[] stages = {4,4,4,4,4};
+        int[] expect = {4,1,2,3};
 
+        int[] result = p6Solution(N, stages);
+        assertThat(result).isEqualTo(expect);
+    }
+
+    int[] p6Solution(int N, int[] arr) {
+        List<FailInfo> list = new ArrayList<>();
+        // 1. 배열을 정렬 1,2,2,2,3,3,4,6
+        Arrays.sort(arr);
+
+        int idx = 0;
+        int total = arr.length; //
+        int stage = 1;
+        int failCount = 0;
+        while(idx < arr.length && stage <= N) {
+            while (idx < arr.length && arr[idx] == stage) {
+                failCount++;
+                idx++;
+            }
+            list.add(new FailInfo(stage, (double) failCount / total));
+
+            // 스테이지 정보 갱신
+            stage++;
+            total -= failCount;
+            failCount = 0;
+        }
+        list.sort(new FailComparator());
+
+        return list.stream().mapToInt(i->i.stage).toArray();
+
+    }
+
+    static class FailInfo {
+        public int stage;
+        public double failRate;
+
+        public FailInfo(int stage, double failRate) {
+            this.stage = stage;
+            this.failRate = failRate;
+        }
+    }
+
+    static class FailComparator implements Comparator<FailInfo> {
+        @Override
+        public int compare(FailInfo o1, FailInfo o2) {
+            int failRateCompare = Double.compare(o2.failRate, o1.failRate);
+            if (failRateCompare != 0) {
+                return failRateCompare;
+            }
+            return o1.stage - o2.stage;
+        }
+    }
+
+    @Test
+    void p7() {
+        char[] dirs = {'U', 'L', 'U', 'R', 'R', 'D', 'L', 'L', 'U'};
+        int expect = 7;
+
+        int actual = p7Solution(dirs);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p7Solution(char[] arr) {
+        // 방향 설정
+        Map<Character, Integer[]> map = new HashMap<>();
+        map.put('U', new Integer[]{0, 1});
+        map.put('D', new Integer[]{0, -1});
+        map.put('L', new Integer[]{-1, 0});
+        map.put('R', new Integer[]{1, 0});
+
+        // 초기 설정
+        int x = 5;
+        int y = 5;
+
+        // 이동 경로 기록
+        Set<String> set = new HashSet<>();
+
+        for (char dir : arr) {
+            int nx = x + map.get(dir)[0];
+            int ny = y + map.get(dir)[1];
+
+            if (!isValidMove(nx, ny)) {
+                continue;
+            }
+
+            // 이동 경로 기록
+            set.add(x + " " + y + " " + nx + " " + ny);
+            set.add(nx + " " + ny + " " + x + " " + y);
+
+            x = nx;
+            y = ny;
+        }
+
+        return set.size() / 2;
+    }
+
+    boolean isValidMove(int nx, int ny) {
+        return nx >= 0 && nx <= 10 && ny >= 0 && ny <= 10;
+    }
 }
