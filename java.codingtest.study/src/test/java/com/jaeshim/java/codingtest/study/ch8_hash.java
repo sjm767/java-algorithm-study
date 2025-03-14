@@ -32,6 +32,7 @@ class ch8_hash {
 
         boolean actual = p01Solution(arr, target);
         assertThat(actual).isEqualTo(expect);
+
     }
 
     boolean p01Solution(int[] arr, int target) {
