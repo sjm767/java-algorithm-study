@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -163,6 +161,134 @@ class ch9_tree {
 
         return result;
     }
+
+    /**
+     * 길 찾기 게임 (****)
+     */
+    @Test
+    void p05() {
+       int[][] nodeinfo = {
+               {5,3}, //1
+               {11,5}, //2
+               {13,3}, //3
+               {3,5}, //4
+               {6,1}, //5
+               {1,3}, //6
+               {8,6}, //7
+               {7,2}, //8
+               {2,2} //9
+       };
+       int[][] expect = {
+               {7,4,6,9,1,8,5,2,3},
+               {9,6,5,8,1,4,3,2,7}
+       };
+
+        int[][] actual = p05Solution(nodeinfo);
+        assertThat(actual).isEqualTo(expect);
+
+    }
+
+    int[][] p05Solution(int[][] nodeinfo) {
+        int[][] newNodeInfo = new int[nodeinfo.length][3];
+        for (int i = 0; i < nodeinfo.length; i++) {
+            newNodeInfo[i][0] = nodeinfo[i][0];
+            newNodeInfo[i][1] = nodeinfo[i][1];
+            newNodeInfo[i][2] = i + 1;
+        }
+
+
+        // y 기준으로 정렬해서 root 노드를 정함
+        Arrays.sort(newNodeInfo, (a, b) -> {
+            // b[1] - a[1] 을 하면 내림차순 정렬이 됩니다.
+            return b[1] - a[1];
+        });
+
+        Node root = new Node(newNodeInfo[0][0], newNodeInfo[0][1], newNodeInfo[0][2]); // root 노드 설정
+
+        // 노드 순회하면서 트리 만들기
+        for (int i = 1; i < newNodeInfo.length; i++) {
+            int x = newNodeInfo[i][0];
+            int y = newNodeInfo[i][1];
+            int val = newNodeInfo[i][2];
+
+            Node parent = root; // root 노드부터 순회시작함
+            Node current = parent;
+            while (true) {
+                int cx = current.x;
+                int cy = current.y;
+
+                if (x < cx) {
+                    current = parent.left;
+                } else {
+                    current = parent.right;
+                }
+
+                if (current == null) {
+                    Node newNode = new Node(x, y, val);
+                    if(x < cx) {
+                        parent.left = newNode;
+                    } else {
+                        parent.right = newNode;
+                    }
+                    break;
+                } else {
+                    parent = current;
+                }
+            }
+        }
+
+        // 전위 순회
+        List<Integer> preOrderList = new ArrayList<>();
+        preOrder(root, preOrderList);
+
+        // 후위 순회
+        List<Integer> postOrderList = new ArrayList<>();
+        postOrder(root, postOrderList);
+
+        int[][] answer = new int[2][preOrderList.size()];
+        answer[0] = preOrderList.stream().mapToInt(Integer::intValue).toArray();
+        answer[1] = postOrderList.stream().mapToInt(Integer::intValue).toArray();
+
+      return answer;
+    }
+
+    void preOrder(Node node, List<Integer> list) {
+        if (node == null) {
+            return;
+        }
+        list.add(node.val);
+        preOrder(node.left, list);
+        preOrder(node.right, list);
+    }
+
+    void postOrder(Node node, List<Integer> list) {
+        if (node == null) {
+            return;
+        }
+
+        postOrder(node.left, list);
+        postOrder(node.right, list);
+        list.add(node.val);
+    }
+
+
+    static class Node {
+        public int x;
+        public int y;
+        public int val;
+
+        public Node left;
+        public Node right;
+
+        public Node(int x, int y,int val) {
+            this.x = x;
+            this.y = y;
+            this.val = val;
+        }
+    }
+
+
+
 
 
 }
