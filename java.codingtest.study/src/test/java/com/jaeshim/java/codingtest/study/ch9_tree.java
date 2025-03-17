@@ -163,6 +163,85 @@ class ch9_tree {
     }
 
     /**
+     * 양과 늑대 (*****)
+     */
+    @Test
+    void p04() {
+        int[] info = {0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0};
+        int[][] edges = {
+            {0, 1},
+            {0, 2},
+            {1, 3},
+            {1, 4},
+            {2, 5},
+            {2, 6},
+            {3, 7},
+            {4, 8},
+            {6, 9},
+            {9, 10}
+        };
+        int expect = 5;
+        int actual = p04Solution(info, edges);
+    }
+
+    int p04Solution(int[] info, int[][] edges) {
+        List<Integer>[] tree; // 트리 정보를 저장
+        tree = new ArrayList[info.length];
+
+        buildTree(info, edges, tree);
+        int answer = 0; // 정답을 저장할 변수
+
+        Queue<Info> queue = new ArrayDeque<>(); // BFS를 위한 큐 생성 및 초기 상태 설정
+        queue.add(new Info(0, 1, 0, new HashSet<>()));
+
+        while (!queue.isEmpty()) {
+            Info now = queue.poll();
+
+            answer = Math.max(answer, now.sheep);
+            now.visited.addAll(tree[now.node]);
+
+            for (int next : now.visited) {
+                HashSet<Integer> set = new HashSet<>(now.visited);
+                set.remove(next);
+
+                if (info[next] == 1) { // 늑대일 경우
+                    if (now.sheep != now.wolf + 1) {
+                        queue.add(new Info(next, now.sheep, now.wolf + 1, set));
+                    }
+                } else {
+                    queue.add(new Info(next, now.sheep + 1, now.wolf, set));
+                }
+            }
+        }
+
+
+
+        return 0;
+    }
+
+    void buildTree(int[] info, int[][] edges, List<Integer>[] tree) {
+        for (int i = 0; i < tree.length; i++) {
+            tree[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            tree[edge[0]].add(edge[1]);
+        }
+    }
+
+    static class Info {
+        int node, sheep, wolf;
+        HashSet<Integer> visited;
+
+        public Info(int node, int sheep, int wolf, HashSet<Integer> visited) {
+            this.node = node;
+            this.sheep = sheep;
+            this.wolf = wolf;
+            this.visited = visited;
+        }
+    }
+
+
+    /**
      * 길 찾기 게임 (****)
      */
     @Test
