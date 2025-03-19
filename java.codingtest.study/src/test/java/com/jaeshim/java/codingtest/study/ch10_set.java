@@ -1,5 +1,7 @@
 package com.jaeshim.java.codingtest.study;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -160,4 +162,94 @@ class ch10_set {
         }
         return answer;
     }
+
+    /**
+     * 섬 연결하기 (***)
+     */
+    @Test
+    void p04() {
+        int n = 4;
+        int[][] costs = {
+            {0,1,1},
+            {0,2,2},
+            {1,2,5},
+            {1,3,1},
+            {2,3,8}
+        };
+        int expect = 4;
+        int actual = p04Solution(n, costs);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p04Solution(int n, int[][] costs) {
+        int answer = 0;
+        int[] parent = new int[n];
+        IntStream.range(0, n).forEach(idx -> parent[idx] = idx);
+
+        // 길이가 짧은 순서대로 정렬
+        Arrays.sort(costs, Comparator.comparingInt(o -> o[2]));
+
+        int edges = 0;
+        for (int[] cost : costs) {
+            int start = cost[0];
+            int end = cost[1];
+            int val = cost[2];
+
+            if (find(parent, start) != find(parent, end)) {
+                union(start, end, parent);
+                answer += val;
+                edges++;
+            }
+
+            if (edges == n - 1) {
+                break;
+            }
+
+        }
+
+        return answer;
+
+//        int answer = 0;
+//        // 트리 구조 초기화
+//        int[] nodes = new int[n];
+//        IntStream.range(0, n).forEach(idx -> nodes[idx] = idx);
+//
+//        // 길이가 짧은 순서대로 정렬
+//        Arrays.sort(costs, (o1, o2) -> o1[2] - o2[2]);
+//
+//        Set<Integer> set = new HashSet<>();
+//        for (int[] cost : costs) {
+//            int start = cost[0];
+//            int end = cost[1];
+//            int val = cost[2];
+//
+//            if (!set.contains(end)) {
+//                set.add(start);
+//                set.add(end);
+//                answer += val;
+//            }
+//
+//            if (set.size() == n) {
+//                break;
+//            }
+//        }
+//
+//        return answer;
+    }
+
+    int find(int[] parent, int x) {
+        if (parent[x] == x) {
+            return x;
+        }
+
+        return parent[x] = find(parent, parent[x]); // 경로 압축
+    }
+
+    void union(int[] parent, int x, int y) {
+        int root1 = find(parent, x);
+        int root2 = find(parent, y);
+
+        parent[root2] = root1;
+    }
+
 }
