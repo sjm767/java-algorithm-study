@@ -148,89 +148,184 @@ class ch11_graph {
      */
     @Test
     void p03() {
+//        // 출발지노드, 목적지노드, 가중치
+//        int[][] graph = {
+//                {0, 1, 9},
+//                {0, 2, 3},
+//                {1, 0, 5},
+//                {2, 1, 1}
+//        };
+//        int start = 0;
+//        int n = 3;
+//        int[] expect = {0, 4, 3};
+
         // 출발지노드, 목적지노드, 가중치
         int[][] graph = {
-                {0, 1, 9},
-                {0, 2, 3},
-                {1, 0, 5},
-                {2, 1, 1}
+                {0, 1, 1},
+                {1, 2, 5},
+                {2, 3, 1}
         };
         int start = 0;
-        int n = 3;
-        int[] expect = {0, 4, 3};
+        int n = 4;
+        int[] expect = {0, 1, 6, 7};
 
         int[] actual = p03Solution(graph, start, n);
+        assertThat(actual).isEqualTo(expect);
     }
 
     int[] p03Solution(int[][] graph, int start, int n) {
-        // 인접리스트로 그래프 만들기
-        ArrayList<DijkstraNode>[] adjList = new ArrayList[n];
+        // 인접 행렬로 표현하기
+        int[][] adjMatrix = new int[n][n];
         for (int[] g : graph) {
-            int src = g[0];
-            int dest = g[1];
-            int weight = g[2];
-
-            if (adjList[src] == null) {
-                adjList[src] = new ArrayList<>();
-            }
-
-            adjList[src].add(new DijkstraNode(dest, weight));
+            adjMatrix[g[0]][g[1]] = g[2];
         }
-        // 초기화
-        List<DijkstraResult> dList = new DijkstraResult;
+
+        // 다익스트라 순회를 위한 리스트 생성
+        List<DijkstraNode> dijkstraNodes = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            dList.add(new DijkstraResult(i, Integer.MAX_VALUE, -1));
+            // 시작점인 경우 초기화
+            if (i == start) { 
+                dijkstraNodes.add(new DijkstraNode(i, 0, start));
+            } else {
+                dijkstraNodes.add(new DijkstraNode(i, Integer.MAX_VALUE, -1));
+            }
         }
-        DijkstraResult startNode = dList.get(start);
-        startNode.lastVisited = 0;
-        startNode.minWeight = 0;
+        PriorityQueue<DijkstraNode> queue = new PriorityQueue<>(Comparator.comparingInt(o -> o.minWeight));
+        offer(dijkstraNodes.get(start), queue);
 
-        // 방문지 기록
-        boolean[] visited = new boolean[n];
-        ArrayDeque<DijkstraResult> stack = new ArrayDeque<>();
-        stack.push(dList.get(start)); // 시작 노드 넣고 시작
+        while (!queue.isEmpty()) {
+            DijkstraNode current = queue.poll();
 
-        while (!stack.isEmpty()) {
-            DijkstraResult current = stack.pop();
-            ArrayList<DijkstraNode> adjNodes = adjList[current.idx];
+            if (!current.visited) {
+                current.visited = true;
 
-            for (DijkstraNode adj : adjNodes) {
-                DijkstraResult dijkstraResult = dList.get(adj.dest);
+                for (int i = 0; i < adjMatrix.length; i++) {
+                    // 인접행렬에 가중치가 존재하고, 현재 노드의 가중치보다 작다면
+                    if (adjMatrix[current.idx][i] != 0) {
+                        DijkstraNode dstNode = dijkstraNodes.get(i);
+                        int weight = current.minWeight + adjMatrix[current.idx][i];
 
-                // 거리가 더 짧으면
-                if (adj.weight < dijkstraResult.minWeight) {
-                    
+                        if (weight < dstNode.minWeight) {
+                            dstNode.minWeight = weight;
+                            dstNode.lastVisited = current.idx;
+                        }
+                        offer(dstNode, queue);
+                    }
                 }
 
             }
         }
 
-
-        return null;
+        return dijkstraNodes.stream()
+                .map(node -> node.minWeight)
+                .mapToInt(Integer::intValue)
+                .toArray();
     }
-    static class DijkstraNode {
-        public int dest;
-        public int weight;
 
-        public DijkstraNode(int dest, int weight) {
-            this.dest = dest;
-            this.weight = weight;
+
+    void offer(DijkstraNode item, PriorityQueue<DijkstraNode> queue) {
+        if (queue.isEmpty()) {
+            queue.offer(item);
+        } else {
+            DijkstraNode current = queue.peek();
+            if (item.minWeight < current.minWeight) {
+                queue.poll();
+                queue.offer(item);
+            }
         }
     }
 
-    static class DijkstraResult {
+    static class DijkstraNode {
         public int idx;
         public int minWeight;
         public int lastVisited;
+        public boolean visited;
 
-        public DijkstraResult(int idx, int minWeight, int lastVisited) {
+        public DijkstraNode(int idx, int minWeight, int lastVisited) {
             this.idx = idx;
             this.minWeight = minWeight;
             this.lastVisited = lastVisited;
+            this.visited = false;
         }
 
         public int getMinWeight() {
             return minWeight;
+        }
+    }
+
+    /**
+     * 게임 맵 최단 거리 (**)
+     */
+    @Test
+    void p04() {
+//        int[][] maps = {
+//                {1, 0, 1, 1, 1},
+//                {1, 0, 1, 0, 1},
+//                {1, 0, 1, 1, 1},
+//                {1, 1, 1, 0, 1},
+//                {0, 0, 0, 0, 1}
+//        };
+//        int expect = 11;
+
+        int[][] maps = {
+                {1, 0, 1, 1, 1},
+                {1, 0, 1, 0, 1},
+                {1, 0, 1, 1, 1},
+                {1, 1, 1, 0, 0},
+                {0, 0, 0, 0, 1}
+        };
+        int expect = -1;
+        int actual = p04Solution(maps);
+
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p04Solution(int[][] maps) {
+        // 방향
+        int[] rx = {0, -1, 0, 1};
+        int[] ry = {-1, 0, 1, 0};
+
+        int n = maps.length;
+        int m = maps[0].length;
+
+        int[][] board = new int[n + 2][m + 2];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                board[i+1][j+1] = maps[i][j];
+            }
+        }
+
+        int[][] dist = new int[n + 2][m + 2]; // 최단거리를 저장할 배열
+        dist[1][1] = 1; // 시작점은 1로 세팅
+
+        Queue<p05Node> queue = new ArrayDeque<>();
+        queue.offer(new p05Node(1, 1));
+
+
+        while (!queue.isEmpty()) {
+            p05Node current = queue.poll();
+
+            for (int i = 0; i < 4; i++) {
+                int nx = current.x + rx[i];
+                int ny = current.y + ry[i];
+                if (board[nx][ny] == 1) {
+                    queue.offer(new p05Node(nx, ny));
+                    dist[nx][ny] = dist[current.x][current.y] + 1;
+                    board[current.x][current.y] = 0; // 이미 왔던 곳으로 체크
+                }
+            }
+        }
+        // 경로를 찾을 수 없다면 -1 리턴
+        return dist[n][m] != 0 ? dist[n][m] : -1;
+    }
+
+    static class p05Node {
+        public int x;
+        public int y;
+
+        public p05Node(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
     }
 }
