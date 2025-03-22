@@ -506,4 +506,214 @@ class ch11_graph {
             this.ny = ny;
         }
     }
+
+    /**
+     * 배달 (***)
+     */
+    @Test
+    void p08() {
+//        int N = 5;
+//        int[][] road = {
+//                {1, 2, 1},
+//                {2, 3, 3},
+//                {5, 2, 2},
+//                {1, 4, 2},
+//                {5, 3, 1},
+//                {5, 4, 2}
+//        };
+//        int K = 3;
+//        int expect = 4;
+
+        int N = 6;
+        int[][] road = {
+                {1, 2, 1},
+                {1, 3, 2},
+                {2, 3, 2},
+                {3, 4, 3},
+                {3, 5, 2},
+                {3, 5, 3},
+                {5, 6, 1}
+        };
+        int K = 4;
+        int expect = 4;
+
+        int actual = p08Solution(N, road, K);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p08Solution(int N, int[][] road, int K) {
+        // 인접 리스트 생성
+        ArrayList<p08Node>[] adjList = new ArrayList[N + 1];
+
+        for (int i = 1; i < N + 1; i++) {
+            adjList[i] = new ArrayList<>();
+        }
+
+        // 인접리스트 초기화
+        for (int[] r : road) {
+            int src = r[0];
+            int dst = r[1];
+            int weight = r[2];
+
+            adjList[src].add(new p08Node(dst, weight));
+            adjList[dst].add(new p08Node(src, weight));
+        }
+
+        // 다익스트라 시작
+        int[] weight = new int[N + 1];
+        Arrays.fill(weight, Integer.MAX_VALUE);
+        weight[1] = 0;
+
+        Queue<Integer> queue = new PriorityQueue<>();
+        queue.offer(1);
+        while (!queue.isEmpty()) {
+            Integer currentIdx = queue.poll();
+            ArrayList<p08Node> nodes = adjList[currentIdx];
+
+            for (p08Node node : nodes) {
+                int nWeight = weight[currentIdx] + node.weight;
+
+                if (nWeight < weight[node.dst] ) {
+                    weight[node.dst] = nWeight;
+                    queue.offer(node.dst);
+                }
+            }
+        }
+
+        int answer = 0;
+        for (int w : weight) {
+            if (w <= K) {
+                answer++;
+            }
+        }
+
+        return answer;
+    }
+
+    static class p08Node{
+        public int dst;
+        public int weight;
+
+        public p08Node(int dst, int weight) {
+            this.dst = dst;
+            this.weight = weight;
+        }
+
+    }
+
+    /**
+     * 경주로 건설 (*****)
+     */
+    @Test
+    void p09() {
+
+    }
+
+    /**
+     * 전력망을 둘로 나누기 (**)
+     */
+    @Test
+    void p10() {
+//        int n = 9;
+//        int[][] wires = {
+//                {1, 3},
+//                {2, 3},
+//                {3, 4},
+//                {4, 5},
+//                {4, 6},
+//                {4, 7},
+//                {7, 8},
+//                {7, 9}
+//        };
+//        int expect = 3;
+
+        int n = 4;
+        int[][] wires = {
+                {1, 2},
+                {2, 3},
+                {3, 4}
+        };
+        int expect = 0;
+
+//        int n = 7;
+//        int[][] wires = {
+//                {1, 2},
+//                {2, 7},
+//                {3, 7},
+//                {3, 4},
+//                {4, 5},
+//                {6, 7}
+//        };
+//        int expect = 1;
+
+        int actual = p10Solution(n, wires);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p10Solution(int n, int[][] wires) {
+        // 인접 리스트 (셋으로) 만들기
+        HashSet<Integer>[] adjList = new HashSet[n + 1];
+        for (int i = 1; i < n + 1; i++) {
+            adjList[i] = new HashSet<>();
+        }
+
+        for (int[] wire : wires) {
+            int src = wire[0];
+            int dst = wire[1];
+
+            adjList[src].add(dst);
+            adjList[dst].add(src);
+        }
+
+        // 전력망 하나씩 끊으면서 둘 간의 차이가 최소일 때 찾기
+        int answer = Integer.MAX_VALUE;
+        for (int[] wire : wires) {
+            int src = wire[0];
+            int dst = wire[1];
+
+            adjList[src].remove(dst);
+            adjList[dst].remove(src);
+
+            int bfs1 = bfs(adjList, src);
+            int bfs2 = bfs(adjList, dst);
+
+            if (Math.abs(bfs1 - bfs2) < answer) {
+                answer = Math.abs(bfs1 - bfs2);
+            }
+
+            // 원복
+            adjList[src].add(dst);
+            adjList[dst].add(src);
+        }
+
+        return answer;
+    }
+
+    /**
+     * bfs를 통해 방문한 노드 수를 리턴한다.
+     * @return
+     */
+    int bfs(HashSet<Integer>[] adjList, int start) {
+        int n = adjList.length;
+        boolean[] visited = new boolean[n]; // 방문 노드 기록
+        int count = 0;
+
+        Queue<Integer> queue = new ArrayDeque<>();
+        queue.offer(start);
+
+        while (!queue.isEmpty()) {
+            Integer current = queue.poll();
+            HashSet<Integer> adjs = adjList[current];
+            visited[current] = true;
+            count++;
+
+            for (Integer a : adjs) {
+                if (!visited[a]) {
+                    queue.offer(a);
+                }
+            }
+        }
+
+        return count;
+    }
 }
