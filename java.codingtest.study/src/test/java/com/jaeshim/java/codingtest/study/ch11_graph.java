@@ -3,6 +3,8 @@ package com.jaeshim.java.codingtest.study;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -326,6 +328,182 @@ class ch11_graph {
         public p05Node(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+    }
+
+    /**
+     * 네트워크 (**)
+     */
+    @Test
+    void p06() {
+//        int n = 3;
+//        int[][] computers = {
+//                {1, 1, 0},
+//                {1, 1, 0},
+//                {0, 0, 1}
+//        };
+//        int expect = 2;
+
+        int n = 3;
+        int[][] computers = {
+                {1, 1, 0},
+                {1, 1, 1},
+                {0, 1, 1}
+        };
+        int expect = 1;
+
+        int actual = p06Solution(n, computers);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p06Solution(int n, int[][] computers) {
+        // 인접 리스트 만들기
+        ArrayList<Integer>[] adjList = new ArrayList[n];
+
+        for (int s = 0; s < n; s++) {
+            // 인접 리스트 초기화
+            if (adjList[s] == null) {
+                adjList[s] = new ArrayList<>();
+            }
+            for (int t = 0; t < n; t++) {
+                int connected = computers[s][t];
+
+                // 연결되어 있으면
+                if (s != t && connected == 1) {
+                    adjList[s].add(t);
+                }
+            }
+        }
+
+        // DFS 처리
+        Set<Integer> visit = new HashSet<>(); // 방문기록
+        Queue<Integer> queue = IntStream.range(0, n)
+                .boxed()
+                .collect(Collectors.toCollection(LinkedList::new));
+        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        int answer = 0;
+
+        while (!queue.isEmpty()) {
+            Integer v = queue.poll();
+
+            if (!visit.contains(v)) { // 방문하지 않은 경우만 push
+                stack.push(v);
+                answer++;
+            }
+            while (!stack.isEmpty()) {
+                Integer currentNode = stack.pop();
+                visit.add(currentNode);
+
+                // 인접 리스트보면서 순회
+                ArrayList<Integer> adjs = adjList[currentNode];
+                adjs.forEach(a -> {
+                    if (!visit.contains(a)) {
+                        visit.add(a); // 방문한것으로 기록
+                        stack.push(a);                        
+                    }
+                });
+            }
+        }
+        
+        return answer;
+    }
+
+    /**
+     * 미로 탈출 (**)
+     */
+    @Test
+    void p07() {
+//        String[] maps = {"SOOOL", "XXXXO", "OOOOO", "OXXXX", "OOOOE"};
+//        int expect = 16;
+
+        String[] maps = {"LOOXS", "OOOOX", "OOOOO", "OOOOO", "EOOOO"};
+        int expect = -1;
+
+        int actual = p07Solution(maps);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p07Solution(String[] maps) {
+        // 이동할 방향
+        final int[] dx = {0, 0, -1, 1};
+        final int[] dy = {-1, 1, 0, 0};
+
+        int n = maps.length;
+        int m = maps[0].length();
+        char[][] map = new char[n][m];
+
+        for (int i = 0; i < n; i++) {
+            map[i] = maps[i].toCharArray();
+        }
+
+        p07Node start = null, end = null, lever = null;
+
+        // 시작/끝/레버를 찾음
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if(map[i][j] == 'S') start = new p07Node(i, j);
+                else if(map[i][j] == 'E') end = new p07Node(i, j);
+                else if(map[i][j] == 'L') lever = new p07Node(i, j);
+            }
+        }
+
+        assert start != null;
+
+        int startToLever = p07bfs(start, lever, n, m, map, dx, dy);
+        int leverToEnd = p07bfs(lever, end, n, m, map, dx, dy);
+
+        if (startToLever == -1 || leverToEnd == -1) {
+            return -1;
+        }
+
+
+        return startToLever + leverToEnd;
+    }
+
+    // 너비우선 탐색
+    static int p07bfs(p07Node start, p07Node end, int n, int m, char[][] map, int[] dx,int[] dy) {
+        int[][] dist =  new int[n][m];
+        ArrayDeque<p07Node> queue = new ArrayDeque<>();
+        dist[start.nx][start.ny] = 0;
+        queue.add(start);
+        int answer = -1;
+
+        while (!queue.isEmpty()) {
+            p07Node current = queue.poll();
+
+            // 목적지라면
+            if (current.nx == end.nx && current.ny == end.ny) {
+                answer = dist[current.nx][current.ny];
+                break;
+            }
+
+            map[current.nx][current.ny] = 'X'; // 방문한 곳 처리
+
+            for (int i = 0; i < 4; i++) {
+                int nx = current.nx + dx[i];
+                int ny = current.ny + dy[i];
+
+                // 이동 가능하고 이미 방문하지 않았다면
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    if(map[nx][ny] != 'X') {
+                        queue.add(new p07Node(nx, ny));
+                        dist[nx][ny] = dist[current.nx][current.ny] + 1;
+                    }
+                }
+            }
+
+        }
+
+        return answer;
+    }
+
+    static class p07Node {
+        public int nx;
+        public int ny;
+
+        public p07Node(int nx, int ny) {
+            this.nx = nx;
+            this.ny = ny;
         }
     }
 }
