@@ -9,29 +9,36 @@ import static org.assertj.core.api.Assertions.*;
 class ch12_backtracking {
 
 
-
-
     /**
-     * 백트래킹 감잡기 : (1,2,3) 숫자로 만들 수 있는 순열 조합 만들어서 리턴하기
-     * 순열이란 (1,2,3), (1,3,2) 와 같이 순서만 바뀌는 것을 의미함.
+     * GPT 추천 백트래킹 문제
+     * - 부분집합 구하기 (*)
+     * 1부터 n까지의 숫자로 만들 수 있는 모든 부분집합을 구하세요.
+     * (숫자의 순서는 유지되지만, 선택 여부는 자유)
      */
     @Test
-    void p0_01() {
-        int[] nums = {1, 2, 3};
-
-        int[][] actual = p0_01Solution(nums);
-        // Junit 결과 확인용 출력
+    void p01() {
+        int n = 3;
+        int[][] expect = {
+                {},
+                {1},
+                {2},
+                {1, 2},
+                {3},
+                {1, 3},
+                {2, 3},
+                {1, 2, 3}
+        };
+        int[][] actual = p01Solution(n);
         Arrays.stream(actual)
                 .map(Arrays::toString)
                 .forEach(System.out::println);
     }
 
-    int[][] p0_01Solution(int[] nums) {
+    int[][] p01Solution(int n) {
         List<List<Integer>> answer = new ArrayList<>();
         List<Integer> current = new ArrayList<>();
-        boolean[] visited = new boolean[nums.length];
 
-        p01_01_backtracking(nums, answer, current, visited);
+        p01backtracking(1, n, answer, current);
 
         return answer.stream()
                 .map(innerList -> innerList.stream()
@@ -40,86 +47,49 @@ class ch12_backtracking {
                 .toArray(int[][]::new);
     }
 
-    void p01_01_backtracking(int[] nums, List<List<Integer>> answer, List<Integer> current, boolean[] visited) {
-        if (current.size() == nums.length) {
-            answer.add(new ArrayList<>(current));
-            return;
-        }
+    void p01backtracking(int start, int n, List<List<Integer>> answer, List<Integer> current) {
 
-        for (int i = 0; i < nums.length; i++) {
-            if (visited[i]) {
-                continue;
-            }
-
-            visited[i] = true;
-            current.add(nums[i]);
-
-            p01_01_backtracking(nums, answer, current, visited);
-
-            visited[i] = false;
-            current.remove(current.size() - 1);
-        }
-
-    }
-
-    /**
-     * 백트래킹 감잡기 : (1,2,3)에서 나올 수 있는 모든 부분집합구하기
-     */
-    @Test
-    void p0_02() {
-        int n = 3; // 1 ~ N 까지의 숫자로 모든 부분집합 구하기
-        int[][] actual = p0_02Solution(n);
-
-        // Junit 결과 확인용 출력
-        Arrays.stream(actual)
-                .map(Arrays::toString)
-                .forEach(System.out::println);
-    }
-
-    int[][] p0_02Solution(int n) {
-        List<List<Integer>> answer = new ArrayList<>();
-        List<Integer> current = new ArrayList<>();
-
-        p0_02backtracking(1, n, answer, current);
-
-        return answer.stream()
-                .map(innerList -> innerList.stream()
-                        .mapToInt(Integer::intValue)
-                        .toArray())
-                .toArray(int[][]::new);
-    }
-
-    void p0_02backtracking(int n, int max, List<List<Integer>> answer, List<Integer> current) {
         answer.add(new ArrayList<>(current));
-        for (int i = n; i <= max; i++) {
+
+        for (int i = start; i <= n; i++) {
             current.add(i);
-            p0_02backtracking(i + 1, max, answer, current);
+            p01backtracking(i + 1, n, answer, current);
 
             current.removeLast();
         }
+
     }
 
     /**
-     * 백트래킹 감잡기 : 조합 (1~4까지의 숫자 중 2개 뽑는 조합)
+     * GPT 추천 백트래킹 문제
+     * - 조합 구하기 (*)
+     * 1부터 n까지 숫자 중에서 중복 없이 k개를 뽑는 모든 조합을 구하세요.
      */
     @Test
-    void p0_03() {
-        int n = 4; // 1 ~ N 까지의 숫자
-        int m = 2; // 조합 할 개수
-        int[][] actual = p02_03Solution(n, m);
+    void p02() {
+        int n = 4;
+        int k = 2;
+        int[][] expect = {
+                {1, 2},
+                {1, 3},
+                {1, 4},
+                {2, 3},
+                {2, 4},
+                {3, 4}
+        };
 
-        // Junit 결과 확인용 출력
+        int[][] actual = p02Solution(n, k);
         Arrays.stream(actual)
                 .map(Arrays::toString)
                 .forEach(System.out::println);
+
     }
 
-    int[][] p02_03Solution(int n,int m) {
-
+    int[][] p02Solution(int n, int k) {
         List<List<Integer>> answer = new ArrayList<>();
         List<Integer> current = new ArrayList<>();
 
-        p0_03backtracking(1, n, m, answer, current);
+        p02backtracking(1, k, n, answer, current);
 
         return answer.stream()
                 .map(innerList -> innerList.stream()
@@ -128,37 +98,213 @@ class ch12_backtracking {
                 .toArray(int[][]::new);
     }
 
-    void p0_03backtracking(int start, int n, int m, List<List<Integer>> answer, List<Integer> current) {
-        if (current.size() == m) {
+    void p02backtracking(int start, int k, int n, List<List<Integer>> answer, List<Integer> current) {
+        if (current.size() == k) {
             answer.add(new ArrayList<>(current));
             return;
         }
 
         for (int i = start; i <= n; i++) {
             current.add(i);
+            p02backtracking(i + 1, k, n, answer, current);
 
-            p0_03backtracking(i + 1, n, m, answer, current);
             current.removeLast();
+        }
+
+    }
+
+    /**
+     * GPT 추천 백트래킹 문제
+     * - 순열 구하기 (*)
+     * 1부터 n까지 숫자 중에서 중복 없이 k개를 뽑아 모든 순서를 고려한 경우를 구하세요.
+     */
+    @Test
+    void p03() {
+        int n = 3;
+        int k = 2;
+        int[][] expect = {
+                {1, 2},
+                {2, 1},
+                {2, 3},
+                {3, 1},
+                {3, 2}
+        };
+
+        int[][] actual = p03Solution(n, k);
+        Arrays.stream(actual)
+                .map(Arrays::toString)
+                .forEach(System.out::println);
+    }
+
+    int[][] p03Solution(int n, int k) {
+        List<List<Integer>> answer = new ArrayList<>();
+        List<Integer> current = new ArrayList<>();
+        boolean[] visited = new boolean[n + 1]; // 1부터 n까지 사용
+
+        p03backtracking(n, k, answer, current, visited);
+
+        return answer.stream()
+                .map(inner -> inner.stream().mapToInt(Integer::intValue).toArray())
+                .toArray(int[][]::new);
+    }
+
+    void p03backtracking(int n, int k, List<List<Integer>> answer, List<Integer> current, boolean[] visited) {
+        if (current.size() == k) {
+            answer.add(new ArrayList<>(current));
+            return;
+        }
+
+        for (int i = 1; i <= n; i++) {
+            if (visited[i]) continue;
+
+            visited[i] = true;
+            current.add(i);
+
+            p03backtracking(n, k, answer, current, visited);
+
+            current.remove(current.size() - 1);
+            visited[i] = false;
         }
     }
 
 
-    /**
-     * 백트래킹 감잡기 : 부분집합 합(책에 있음), N퀸 문제
-     */
+
+//    /**
+//     * 백트래킹 감잡기 : (1,2,3) 숫자로 만들 수 있는 순열 조합 만들어서 리턴하기
+//     * 순열이란 (1,2,3), (1,3,2) 와 같이 순서만 바뀌는 것을 의미함.
+//     */
+//    @Test
+//    void p0_01() {
+//        int[] nums = {1, 2, 3};
+//
+//        int[][] actual = p0_01Solution(nums);
+//        // Junit 결과 확인용 출력
+//        Arrays.stream(actual)
+//                .map(Arrays::toString)
+//                .forEach(System.out::println);
+//    }
+//
+//    int[][] p0_01Solution(int[] nums) {
+//        List<List<Integer>> answer = new ArrayList<>();
+//        List<Integer> current = new ArrayList<>();
+//        boolean[] visited = new boolean[nums.length];
+//
+//        p01_01_backtracking(nums, answer, current, visited);
+//
+//        return answer.stream()
+//                .map(innerList -> innerList.stream()
+//                        .mapToInt(Integer::intValue)
+//                        .toArray())
+//                .toArray(int[][]::new);
+//    }
+//
+//    void p01_01_backtracking(int[] nums, List<List<Integer>> answer, List<Integer> current, boolean[] visited) {
+//        if (current.size() == nums.length) {
+//            answer.add(new ArrayList<>(current));
+//            return;
+//        }
+//
+//        for (int i = 0; i < nums.length; i++) {
+//            if (visited[i]) {
+//                continue;
+//            }
+//
+//            visited[i] = true;
+//            current.add(nums[i]);
+//
+//            p01_01_backtracking(nums, answer, current, visited);
+//
+//            visited[i] = false;
+//            current.remove(current.size() - 1);
+//        }
+//
+//    }
+//
+//    /**
+//     * 백트래킹 감잡기 : (1,2,3)에서 나올 수 있는 모든 부분집합구하기
+//     */
+//    @Test
+//    void p0_02() {
+//        int n = 3; // 1 ~ N 까지의 숫자로 모든 부분집합 구하기
+//        int[][] actual = p0_02Solution(n);
+//
+//        // Junit 결과 확인용 출력
+//        Arrays.stream(actual)
+//                .map(Arrays::toString)
+//                .forEach(System.out::println);
+//    }
+//
+//    int[][] p0_02Solution(int n) {
+//        List<List<Integer>> answer = new ArrayList<>();
+//        List<Integer> current = new ArrayList<>();
+//
+//        p0_02backtracking(1, n, answer, current);
+//
+//        return answer.stream()
+//                .map(innerList -> innerList.stream()
+//                        .mapToInt(Integer::intValue)
+//                        .toArray())
+//                .toArray(int[][]::new);
+//    }
+//
+//    void p0_02backtracking(int n, int max, List<List<Integer>> answer, List<Integer> current) {
+//        answer.add(new ArrayList<>(current));
+//        for (int i = n; i <= max; i++) {
+//            current.add(i);
+//            p0_02backtracking(i + 1, max, answer, current);
+//
+//            current.removeLast();
+//        }
+//    }
+//
+//    /**
+//     * 백트래킹 감잡기 : 조합 (1~4까지의 숫자 중 2개 뽑는 조합)
+//     */
+//    @Test
+//    void p0_03() {
+//        int n = 4; // 1 ~ N 까지의 숫자
+//        int m = 2; // 조합 할 개수
+//        int[][] actual = p02_03Solution(n, m);
+//
+//        // Junit 결과 확인용 출력
+//        Arrays.stream(actual)
+//                .map(Arrays::toString)
+//                .forEach(System.out::println);
+//    }
+//
+//    int[][] p02_03Solution(int n,int m) {
+//
+//        List<List<Integer>> answer = new ArrayList<>();
+//        List<Integer> current = new ArrayList<>();
+//
+//        p0_03backtracking(1, n, m, answer, current);
+//
+//        return answer.stream()
+//                .map(innerList -> innerList.stream()
+//                        .mapToInt(Integer::intValue)
+//                        .toArray())
+//                .toArray(int[][]::new);
+//    }
+//
+//    void p0_03backtracking(int start, int n, int m, List<List<Integer>> answer, List<Integer> current) {
+//        if (current.size() == m) {
+//            answer.add(new ArrayList<>(current));
+//            return;
+//        }
+//
+//        for (int i = start; i <= n; i++) {
+//            current.add(i);
+//
+//            p0_03backtracking(i + 1, n, m, answer, current);
+//            current.removeLast();
+//        }
+//    }
+//
+//
+//    /**
+//     * 백트래킹 감잡기 : 부분집합 합(책에 있음), N퀸 문제
+//     */
 
 
-    /**
-     * 1부터 N까지 숫자 중 합이 10이 되는 조합구하기 (*)
-     */
-    @Test
-    void p01() {
-        int N = 5;
-
-    }
-
-    void p01Solution(int N) {
-
-    }
 
 }
