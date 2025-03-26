@@ -167,6 +167,97 @@ class ch12_backtracking {
         }
     }
 
+    /**
+     * GPT 추천 백트래킹 문제
+     * - 중복 조합 구하기 (중복 허용 조합) (*)
+     * 1부터 n까지의 숫자 중에서 중복을 허용하며 k개를 뽑는 모든 조합을 구하세요.
+     * 단, 오름차순으로만 뽑습니다!!
+     */
+    @Test
+    void p04() {
+        int n = 3;
+        int k = 2;
+        int[][] expect = {
+                {1, 1},
+                {1, 2},
+                {1, 3},
+                {2, 2},
+                {3, 3}
+        };
+
+        int[][] actual = p04Solution(n, k);
+        Arrays.stream(actual)
+                .map(Arrays::toString)
+                .forEach(System.out::println);
+    }
+
+    int[][] p04Solution(int n, int k) {
+        List<List<Integer>> answer = new ArrayList<>();
+        List<Integer> current = new ArrayList<>();
+
+        p04backtracking(1, n, k, answer, current);
+
+        return answer.stream()
+                .map(inner -> inner.stream().mapToInt(Integer::intValue).toArray())
+                .toArray(int[][]::new);
+    }
+
+
+    void p04backtracking(int start, int n, int k, List<List<Integer>> answer, List<Integer> current) {
+        if (current.size() == k) {
+            answer.add(new ArrayList<>(current));
+            return;
+        }
+
+        for (int i = start; i <= n; i++) {
+            current.add(i);
+
+            p04backtracking(i, n, k, answer, current);
+            current.removeLast();
+        }
+
+    }
+
+    /**
+     * GPT 추천 백트래킹 문제
+     * - 괄호 생성 (Leetcode 22: Generate Parentheses) (Leetcode Medium)
+     * 올바른 괄호 쌍 n쌍이 있을 때, 만들 수 있는 모든 올바른 괄호 문자열을 구하세요.
+     */
+    @Test
+    void p05() {
+        int n = 2;
+        String[] expect = {
+                "(())",
+                "()()"
+        };
+        String[] actual = p05Solution(n);
+        Arrays.stream(actual).forEach(System.out::println);
+
+    }
+
+    String[] p05Solution(int n) {
+        List<String> answer = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+
+        p05backtracking("", 0, 0, answer, n);
+
+        return answer.toArray(String[]::new);
+    }
+
+    void p05backtracking(String current, int open, int close, List<String> answer,int n) {
+        if (current.length() == (n * 2)) {
+            answer.add(current);
+            return;
+        }
+
+        if (open < n) {
+            p05backtracking(current + "(", open + 1, close, answer, n);
+        }
+
+        if (close < open) {
+            p05backtracking(current + ")", open, close + 1, answer, n);
+        }
+    }
 
 
 //    /**
