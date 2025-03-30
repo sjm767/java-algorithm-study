@@ -646,8 +646,132 @@ class ch12_backtracking_withgpt {
         }
     }
 
+    /**
+     *  GPT 추천 백트래킹 문제
+     *  - 숫자 조합으로 합 만들기
+     *  N개의 자연수가 주어졌을 때, 이 숫자들을 조합해서 만들 수 있는 모든 부분 집합의 합을 구하고,
+     * 이 중 서로 다른 합의 개수를 구하세요.
+     * 만들 수 있는 부분합:
+     *
+     *     2
+     *     4
+     *     6
+     *     2+4 = 6
+     *     2+6 = 8
+     *     4+6 = 10
+     *     2+4+6 = 12
+     * → 중복 제거 후: {2, 4, 6, 8, 10, 12} → 총 6가지
+     */
+    @Test
+    void p13() {
+        int n = 3;
+        int[] nums = {2, 4, 6};
+        int expect = 6;
 
+        int actual = p13Solution(n, nums);
+        assertThat(actual).isEqualTo(expect);
+    }
 
+    int p13Solution(int n, int[] nums) {
+        List<Integer> current = new ArrayList<>();
+        Set<Integer> ans = new HashSet<>();
+
+        p13backtracking(0, n, nums, ans, current);
+
+        return ans.size();
+    }
+
+    void p13backtracking(int start, int n, int[] nums, Set<Integer> ans, List<Integer> current) {
+        if (start >= nums.length) {
+            return;
+        }
+
+        for (int i = start; i < n; i++) {
+            int num = nums[i];
+            current.add(num);
+            ans.add(current.stream().mapToInt(val -> val).sum());
+
+            p13backtracking(i + 1, n, nums, ans, current);
+
+            current.removeLast();
+        }
+    }
+
+    /**
+     *  GPT 추천 백트래킹 문제
+     *  - 암호만들기
+     *  서로 다른 L개의 알파벳 소문자 조합으로 암호를 만든다.
+     *  암호는 다음 조건을 만족해야 함:
+     *     알파벳 오름차순 정렬이어야 함
+     *     모음(a, e, i, o, u) 최소 1개
+     *     자음은 최소 2개
+     *   첫 줄: L C (L은 암호 길이, C는 사용 가능한 문자 수)
+     *   둘째 줄: C개의 문자 (공백으로 구분, 모두 서로 다름)
+     *   출력: 조건을 만족하는 모든 암호를 사전 순 정렬된 순서로 출력
+     */
+    @Test
+    void p14() {
+        int L = 4; // 암호 길이
+        int C = 6; // 사용가능한 알파벳 수
+        char[] chars = {'a','t','c','i','s','w'}; // 사용가능한 알파벳
+
+        // 14개
+        String[] expect = {
+                "acis",
+                "acit",
+                "aciw",
+                "acst",
+                "acsw",
+                "actw",
+                "aist",
+                "aisw",
+                "aitw",
+                "astw",
+                "cist",
+                "cisw",
+                "citw",
+                "istw"
+        };
+        String[] actual = p14Solution(L, C, chars);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    String[] p14Solution(int L, int C, char[] chars) {
+        Set<Character> vowels = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));
+        List<String> answer = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+
+        Arrays.sort(chars);
+
+        p14backtracking(0, L, C, chars, vowels, answer, current);
+        return answer.toArray(new String[0]);
+    }
+
+    void p14backtracking(int idx, int L, int C, char[] chars, Set<Character> vowels, List<String> answer, StringBuilder current) {
+        if (current.length() == L) {
+            int vowelCount = 0;
+            int consonantCount = 0;
+
+            for (int i = 0; i < current.length(); i++) {
+                char c = current.charAt(i);
+                if (vowels.contains(c)) vowelCount++;
+                else consonantCount++;
+            }
+
+            if (vowelCount >= 1 && consonantCount >= 2) {
+                answer.add(current.toString());
+            }
+            return;
+        }
+
+        for (int i = idx; i < C; i++) {
+            current.append(chars[i]);
+
+            p14backtracking(i + 1, L, C, chars, vowels, answer, current);
+
+            current.deleteCharAt(current.length() - 1);
+        }
+    }
 
 
 //    /**
