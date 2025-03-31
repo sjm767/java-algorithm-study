@@ -152,4 +152,109 @@ class ch12_backtracking {
         }
     }
 
+    /**
+     * N-퀸 문제 (*)
+     */
+    @Test
+    void p04() {
+        int n = 4;
+        int expect = 2;
+
+        int actual = p04Solution(n);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p04Solution(int n) {
+        AtomicInteger answer = new AtomicInteger();
+        boolean[] colDiag = new boolean[n];
+        boolean[] leftDiag = new boolean[2 * n];
+        boolean[] rightDiag = new boolean[2 * n];
+
+        p04backtracking(0, n, colDiag, leftDiag, rightDiag, answer);
+
+        return answer.get();
+    }
+
+    void p04backtracking(int row, int n, boolean[] colDiag, boolean[] leftDiag, boolean[] rightDiag, AtomicInteger answer) {
+        if (row == n) {
+            answer.incrementAndGet();
+            return;
+        }
+
+        for (int col = 0 ; col < n; col++) {
+            if (colDiag[col] || leftDiag[row + col] || rightDiag[row - col + n]) {
+                continue;
+            }
+
+            colDiag[col] = true;
+            leftDiag[row + col] = true;
+            rightDiag[row - col + n] = true;
+
+            p04backtracking(row + 1, n, colDiag, leftDiag, rightDiag, answer);
+
+            colDiag[col] = false;
+            leftDiag[row + col] = false;
+            rightDiag[row - col + n] = false;
+        }
+    }
+
+    /**
+     * 양궁 대회 (**)
+     */
+    @Test
+    void p05() {
+        int n = 5; // 화살의 개수
+        int[] info = {2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}; // 어피치가 맞춘 과녁 점수
+
+        p05Solution(n, info);
+    }
+
+    void p05Solution(int n, int[] info) {
+        List<List<Integer>> answer = new ArrayList<>();
+        int[] counts = new int[11];
+
+        p05backtracking(10, n, info, 0, 0, counts);
+        int a = 4;
+    }
+
+    int max = Integer.MIN_VALUE;
+    int[] answer = null;
+    void p05backtracking(int start, int n, int[] info, int sum, int count, int[] counts) {
+        if (count == n) {
+            int score = getScore(counts, info);
+            if (score > 0) {
+                answer = counts;
+            }
+            return;
+        }
+
+        for (int i = start; i >= 0; i--) {
+            counts[i]++;
+            count++;
+            p05backtracking(i - 1, n, info, sum, count, counts);
+            counts[i]--;
+            count--;
+        }
+    }
+
+    int getScore(int[] counts, int[] info) {
+        int rScore = 0;
+        int aScore = 0;
+        for (int i = 0; i < 11; i++) {
+
+            if (counts[i] > info[i]) {
+                rScore += (10 - i);
+            } else {
+                aScore += (10 - i);
+            }
+        }
+
+        if (rScore > aScore) {
+            return rScore;
+        }
+
+        return -1;
+    }
+
+
 }
