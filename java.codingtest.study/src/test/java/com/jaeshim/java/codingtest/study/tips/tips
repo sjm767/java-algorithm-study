@@ -1,0 +1,100 @@
+// Collection 정렬
+Collections.sort(arr);
+Collections.sort(numbers, Comparator.reverseOrder()); //내림차순
+
+// 4자리로 자르고 int로 변환
+arr.stream()
+            .limit(4)
+            .mapToInt(Integer::intValue)
+            .sum();
+
+
+numbers.subList(1, 4).stream()  // index 1~3 (4는 포함 X)
+                 .mapToInt(Integer::intValue)
+                 .sum();
+//배열을 ArrayList로 변환하기
+Arrays.stream(point).boxed().collect(Collectors.toList());
+
+//primitive type을 레퍼런스타입으로 변경하기
+Arrays.stream(arr).boxed().toArray(Integer[]::new);
+
+// 리스트 순회하면서 Long으로 변환하기
+arr.subList(0, 4)
+            .stream()
+            .mapToLong(Integer::longValue)
+            .sum();
+
+// 문자열 표현
+String.format("%02d:%s:%s",time, minute, seconds)
+
+//Map 순회 방법1. entry
+for (Map.Entry<String, Integer> entry : map.entrySet()) {
+
+// Map 순회 방법2. Iterator
+Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
+while (iterator.hasNext()) {
+    Map.Entry<String, Integer> entry = iterator.next();
+    System.out.println(entry.getKey() + " = " + entry.getValue());
+}
+
+//Map에서 value를 기준으로 정렬한 뒤 Map으로 생성하기
+        Map<String, Integer> map = new HashMap<>();
+        map.put("apple", 3);
+        map.put("banana", 1);
+        map.put("cherry", 2);
+
+        // EntrySet을 리스트로 바꿔서 정렬
+        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
+        entryList.sort(Map.Entry.comparingByValue()); // value 기준 오름차순 정렬
+
+        // 정렬된 결과를 유지하려면 LinkedHashMap에 다시 넣어줌
+        Map<String, Integer> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : entryList) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+// string to charArray
+char[] ch = s.toCharArray();
+
+// 문자열 순환시키기
+                if(ch[i] >= 'a' && ch[i] <= 'z') {
+                    ch[i] = (char) ('a' + (ch[i] - 'a' + k) % 26);
+                }
+                else {
+                    ch[i] = (char) ('A' + (ch[i] - 'A' + k) % 26);
+                }
+
+// 문자열 뒤집기
+new StringBuilder(s).reverse().toString()
+
+// char 로 된 숫자를 실제 숫자로 변환하기
+int num = c - '0'
+
+// 대상 숫자가 2의 제곱수 인지 확인하기
+public static boolean isPowerOfTwo(int n) {
+    return n > 0 && (n & (n - 1)) == 0;
+}
+
+//n보다 작은 가장 가까운 2의 제곱수 찾기
+nextLower = Long.highestOneBit(n);
+
+//n보다 큰 가장 가까운 2의 제곱수 찾기
+    int pow = Integer.highestOneBit(n);
+    return (pow == n) ? n : pow << 1;
+
+//최대공약수 구하기 (유클리드 호제법)
+GCD(a,b) -> GCD(b, a%b) -> b가 0이 되는 순간 답은 a임.
+public static int gcd(int a, int b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
+}
+//n개의 수에 대해 최대공약수 구하기
+        for(int i=1;i<b.size();i++){
+            gcd = GCD(gcd, b.get(i));
+        }
+//최소공배수 구하기 (최대공약수를 활용할 수 있음)
+(a*b) / GCD(a,b)
+//n개의 수에 대해 최소공배수 구하기
+        for (int i = 1; i < a.size(); i++) {
+            lcm = (lcm * a.get(i)) / GCD(lcm, a.get(i));
+        }
