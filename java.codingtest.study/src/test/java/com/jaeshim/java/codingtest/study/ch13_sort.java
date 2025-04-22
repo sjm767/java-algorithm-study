@@ -2,6 +2,8 @@ package com.jaeshim.java.codingtest.study;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.*;
+
 import static org.assertj.core.api.Assertions.*;
 
 class ch13_sort {
@@ -126,5 +128,140 @@ class ch13_sort {
 
             p002Heapify(arr, heapSize, largest);
         }
+    }
+
+    /**
+     * 계수 정렬 구현하기 (*)
+     */
+    @Test
+    void p01() {
+        String s = "hello";
+        String expect = "ehllo";
+
+        String actual = p01Solution(s);
+        assertThat(expect).isEqualTo(actual);
+    }
+
+    String p01Solution(String s) {
+        int[] alphabet = new int[26];
+
+        for (char ch : s.toCharArray()) {
+            alphabet[ch-'a']++;
+        }
+
+        StringBuilder answer = new StringBuilder();
+        for (int i = 0; i < alphabet.length; i++) {
+            if(alphabet[i] > 0) {
+                for (int j = 0; j < alphabet[i]; j++) {
+                    answer.append((char) (i + 'a'));
+                }
+            }
+        }
+
+        return answer.toString();
+    }
+
+    /**
+     * 정렬이 완료된 두 배열 합치기 (*)
+     */
+    @Test
+    void p02() {
+        int[] arr1 = {1, 3, 5};
+        int[] arr2 = {2, 4, 6};
+
+        int[] expect = {1, 2, 3, 4, 5, 6};
+        int[] actual = p02Solution(arr1, arr2);
+
+        assertThat(expect).isEqualTo(actual);
+    }
+    int[] p02Solution(int[] arr1, int[] arr2) {
+        int[] merged = new int[arr1.length + arr2.length];
+
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        while (i < arr1.length && j < arr2.length) {
+            if (arr1[i] < arr2[j]) {
+                merged[k++] = arr1[i++];
+            } else {
+                merged[k++] = arr2[j++];
+            }
+        }
+
+        while(i < arr1.length) merged[k++] = arr1[i++];
+        while(j < arr2.length) merged[k++] = arr2[j++];
+
+        return merged;
+    }
+
+    /**
+     * 문자열 내 마음대로 정렬하기 (*)
+     */
+    @Test
+    void p03() {
+//        List<String> strs = new ArrayList<>(List.of("sun", "bed", "car"));
+//        int n = 1;
+//        List<String> expect = List.of("car", "bed", "sun");
+
+        List<String> strs = new ArrayList<>(List.of("abce", "abcd", "cdx"));
+        int n = 2;
+        List<String> expect = List.of("abcd", "abce", "cdx");
+
+        List<String> actual = p03Solution(strs, n);
+        assertThat(expect).isEqualTo(actual);
+    }
+
+    List<String> p03Solution(List<String> strs, int n) {
+        strs.sort((o1, o2) -> {
+            char c1 = o1.charAt(n);
+            char c2 = o2.charAt(n);
+
+            if (c1 == c2) {
+                return o1.compareTo(o2); // 사전순
+            }
+            return Character.compare(c1, c2); // 안정적인 문자 비교
+        });
+
+        return strs;
+    }
+
+    /**
+     * 정수 내림차순으로 배치하기 (*)
+     */
+    @Test
+    void p04() {
+        int n = 118372;
+        int expect = 873211;
+
+        int actual = p04Solution(n);
+    }
+
+    int p04Solution(int n) {
+        List<Integer> answer = new ArrayList<>();
+
+        int max = Integer.MIN_VALUE;
+        List<Integer> list = new ArrayList<>();
+        while (n > 0) {
+
+            max = Math.max(max, n % 10);
+            list.add(n % 10);
+            n = n / 10;
+        }
+
+        int[] rank = new int[max + 1];
+
+        for (Integer l : list) {
+            rank[l]++;
+        }
+
+        for (int r = rank.length - 1; r >= 0; r--) {
+            if (rank[r] > 0) {
+                for (int i = 0; i < rank[r]; i++) {
+                    answer.add(r);
+                }
+            }
+        }
+
+        return 0;
     }
 }
