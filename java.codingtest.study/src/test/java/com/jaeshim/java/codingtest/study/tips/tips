@@ -98,3 +98,8 @@ public static int gcd(int a, int b) {
         for (int i = 1; i < a.size(); i++) {
             lcm = (lcm * a.get(i)) / GCD(lcm, a.get(i));
         }
+// 배열 범위로 복사하기
+int[] subset = Arrays.copyOfRange(array, i - 1, j);
+
+// 정수n을 문자열 배열로 변환하기 (split 활용)
+String[] digits = String.valueOf(n).split("");

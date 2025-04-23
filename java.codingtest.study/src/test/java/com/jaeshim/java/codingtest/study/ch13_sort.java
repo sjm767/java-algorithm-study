@@ -230,38 +230,173 @@ class ch13_sort {
      */
     @Test
     void p04() {
-        int n = 118372;
-        int expect = 873211;
+        long n = 118372;
+        long expect = 873211;
 
-        int actual = p04Solution(n);
+        long actual = p04Solution(n);
+        assertThat(actual).isEqualTo(expect);
     }
 
-    int p04Solution(int n) {
+    long p04Solution(long n) {
+        String[] digits = String.valueOf(n).split("");
+
+        Arrays.sort(digits, Comparator.reverseOrder());
+
+        StringBuilder sb = new StringBuilder();
+        for (String digit : digits) {
+            sb.append(digit);
+        }
+
+        return Long.parseLong(sb.toString());
+    }
+
+    /**
+     * K번째 수 (*)
+     */
+    @Test
+    void p05() {
+        int[] array = {1, 5, 2, 6, 3, 7, 4};
+        int[][] commands = {
+                {2, 5, 3},
+                {4, 4, 1},
+                {1, 7, 3}
+        };
+
+        int[] expect = {5, 6, 3};
+        int[] actual = p05Solution(array, commands);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int[] p05Solution(int[] array, int[][] commands) {
         List<Integer> answer = new ArrayList<>();
+        for (int[] command : commands) {
+            int i = command[0];
+            int j = command[1];
+            int k = command[2];
 
-        int max = Integer.MIN_VALUE;
-        List<Integer> list = new ArrayList<>();
-        while (n > 0) {
-
-            max = Math.max(max, n % 10);
-            list.add(n % 10);
-            n = n / 10;
+            int[] subset = Arrays.copyOfRange(array, i - 1, j);
+            Arrays.sort(subset);
+            answer.add(subset[k - 1]);
         }
 
-        int[] rank = new int[max + 1];
+        return answer.stream().mapToInt(Integer::intValue).toArray();
+    }
 
-        for (Integer l : list) {
-            rank[l]++;
+    /**
+     * 가장 큰 수 (***)
+     */
+    @Test
+    void p06() {
+//        int[] numbers = {6, 10, 2};
+//        String expect = "6210";
+
+        int[] numbers = {3, 30, 34, 5, 9};
+        String expect = "9534330";
+
+        String actual = p06Solution(numbers);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    String p06Solution(int[] numbers) {
+        List<String> list = new ArrayList<>();
+        for (int n : numbers) {
+            list.add("" + n);
         }
 
-        for (int r = rank.length - 1; r >= 0; r--) {
-            if (rank[r] > 0) {
-                for (int i = 0; i < rank[r]; i++) {
-                    answer.add(r);
+        list.sort((o1, o2) -> {
+            String a1 = o1 + o2;
+            String a2 = o2 + o1;
+
+            if (a1.compareTo(a2) > 0) {
+                return -1;
+            }
+            return 1;
+        });
+
+        StringBuilder answer = new StringBuilder();
+        list.forEach(answer::append);
+
+        if (answer.toString().charAt(0) == '0') {
+            return "0";
+        }
+
+        return answer.toString();
+    }
+
+    /**
+     * 튜플 (**)
+     */
+    @Test
+    void p07() {
+//        String s = "{{2},{2,1},{2,1,3},{2,1,3,4}}";
+//        int[] result = {2, 1, 3, 4};
+
+        String s = "{{1,2,3},{2,1},{1,2,4,3},{2}}";
+        int[] expect = {2, 1, 3, 4};
+
+        int[] actual = p07Solution(s);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int[] p07Solution(String s) {
+        String substr = s.substring(2, s.length() - 2);
+        String[] subsets = substr.split("\\},\\{");
+
+        Arrays.sort(subsets, Comparator.comparingInt(String::length));
+
+        List<Integer> answer = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
+        for (String subset : subsets) {
+            String[] split = subset.split(",");
+
+            for (String ss : split) {
+                int num = Integer.parseInt(ss);
+                if (set.add(num)) {
+                    answer.add(num);
                 }
             }
         }
+        return answer.stream().mapToInt(Integer::intValue).toArray();
+    }
 
-        return 0;
+    /**
+     * 지형 이동 (****)
+     */
+    @Test
+    void p08() {
+
+    }
+
+    /**
+     * 전화번호 목록 (**)
+     */
+    @Test
+    void p09() {
+//        String[] phoneBook = {"119", "97674223", "1195524421"};
+//        boolean expect = false;
+
+//        String[] phoneBook = {"123","456","789"};
+//        boolean expect = true;
+
+        String[] phoneBook = {"12","123","1235","567","88"};
+        boolean expect = false;
+
+        boolean actual = p09Solution(phoneBook);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    boolean p09Solution(String[] phoneBook) {
+        Arrays.sort(phoneBook);
+
+        for (int i = 0; i < phoneBook.length - 1; i++) {
+            String src = phoneBook[i];
+            String target = phoneBook[i + 1];
+
+            if (target.startsWith(src)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
