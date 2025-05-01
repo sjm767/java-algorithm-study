@@ -1,63 +1,60 @@
 package com.jaeshim.java.codingtest.study;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * 생각나는 것 빠르게 짜보기 위해 사용
  */
 public class ch0_quickCode {
 
-    public static void main(String[] args) {
-        int[][] graph = {
-                {1, 2},
-                {1, 3},
-                {2, 4},
-                {2, 5},
-                {3, 6},
-                {5, 6}
-        };
-        int start = 1;
-        int n = 6;
+    @Test
+    void p01() {
+        int[] arr = {38, 27, 43, 3, 9, 82, 10};
+        int[] expect = {3, 9, 10, 27, 38, 43, 82};
 
-        boolean[] visited = new boolean[n + 1];
-        ArrayList<Integer>[] adjLists = new ArrayList[n + 1];
-        List<Integer> answer = new ArrayList<>();
+        int[] actual = mergeSort(arr);
+        int a = 4;
+    }
 
-        for (int i = 0; i < adjLists.length; i++) {
-            adjLists[i] = new ArrayList<>();
-        }
+    int[] mergeSort(int[] arr) {
+        if(arr.length == 1) return arr;
 
-        // 인접리스트 생성
-        for (int[] g : graph) {
-            int s = g[0];
-            int e = g[1];
+        int mid = arr.length / 2;
 
-            adjLists[s].add(e);
-        }
+        int[] left = new int[mid];
+        int[] right = new int[arr.length - mid];
 
-        ArrayDeque<Integer> stack = new ArrayDeque<>();
-        stack.push(start);
+        System.arraycopy(arr, 0, left, 0, mid);
+        System.arraycopy(arr, mid, right, 0, arr.length - mid);
 
-        while (!stack.isEmpty()) {
-            Integer node = stack.pop();
-            visited[node] = true;
-            answer.add(node);
+        left = mergeSort(left);
+        right = mergeSort(right);
 
-            for (Integer adj : adjLists[node]) {
+        return merge(arr, left, right);
+    }
 
-                if(!visited[adj]) {
-                    stack.push(adj);
-                }
+    int[] merge(int[] arr, int[] left, int[] right) {
+        int l = 0;
+        int r = 0;
+        int k = 0;
+
+        while (l < left.length && r < right.length) {
+            if (left[l] < right[r]) {
+                arr[k++] = left[l++];
+            } else {
+                arr[k++] = right[r++];
             }
         }
 
-        for (Integer a : answer) {
-            System.out.println(a+" ");
+        while (l < left.length) {
+            arr[k++] = left[l++];
         }
 
+        while (r < right.length) {
+            arr[k++] = right[r++];
+        }
 
+        return arr;
     }
 
 
