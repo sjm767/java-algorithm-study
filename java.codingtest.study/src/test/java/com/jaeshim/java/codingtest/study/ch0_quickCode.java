@@ -1,61 +1,47 @@
 package com.jaeshim.java.codingtest.study;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * 생각나는 것 빠르게 짜보기 위해 사용
  */
 public class ch0_quickCode {
 
+    public int answer = 0;
     @Test
     void p01() {
-        int[] arr = {38, 27, 43, 3, 9, 82, 10};
-        int[] expect = {3, 9, 10, 27, 38, 43, 82};
+        int k = 80;
+        int[][] dungeons = {
+                {50, 40},
+                {80, 20},
+                {30, 10}
+        };
 
-        int[] actual = mergeSort(arr);
-        int a = 4;
+        p01Solution(k, dungeons);
     }
 
-    int[] mergeSort(int[] arr) {
-        if(arr.length == 1) return arr;
+    void p01Solution(int k, int[][] dungeons) {
+        boolean[] visited = new boolean[dungeons.length];
+        p01backtracking(k, dungeons, 0, visited);
 
-        int mid = arr.length / 2;
-
-        int[] left = new int[mid];
-        int[] right = new int[arr.length - mid];
-
-        System.arraycopy(arr, 0, left, 0, mid);
-        System.arraycopy(arr, mid, right, 0, arr.length - mid);
-
-        left = mergeSort(left);
-        right = mergeSort(right);
-
-        return merge(arr, left, right);
     }
 
-    int[] merge(int[] arr, int[] left, int[] right) {
-        int l = 0;
-        int r = 0;
-        int k = 0;
-
-        while (l < left.length && r < right.length) {
-            if (left[l] < right[r]) {
-                arr[k++] = left[l++];
-            } else {
-                arr[k++] = right[r++];
+    void p01backtracking(int k, int[][] dungeons, int complete, boolean[] visited) {
+        for (int i = 0; i < dungeons.length; i++) {
+            if (!visited[i] && k >= dungeons[i][0]) {
+                visited[i] = true;
+                p01backtracking(k- dungeons[i][1], dungeons, complete + 1, visited);
+                answer = Math.max(answer, complete);
+                visited[i] = false;
             }
         }
-
-        while (l < left.length) {
-            arr[k++] = left[l++];
-        }
-
-        while (r < right.length) {
-            arr[k++] = right[r++];
-        }
-
-        return arr;
     }
-
-
 }
