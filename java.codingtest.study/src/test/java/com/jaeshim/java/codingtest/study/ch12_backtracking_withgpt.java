@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -774,141 +773,303 @@ class ch12_backtracking_withgpt {
     }
 
 
-//    /**
-//     * 백트래킹 감잡기 : (1,2,3) 숫자로 만들 수 있는 순열 조합 만들어서 리턴하기
-//     * 순열이란 (1,2,3), (1,3,2) 와 같이 순서만 바뀌는 것을 의미함.
-//     */
-//    @Test
-//    void p0_01() {
-//        int[] nums = {1, 2, 3};
-//
-//        int[][] actual = p0_01Solution(nums);
-//        // Junit 결과 확인용 출력
-//        Arrays.stream(actual)
-//                .map(Arrays::toString)
-//                .forEach(System.out::println);
-//    }
-//
-//    int[][] p0_01Solution(int[] nums) {
-//        List<List<Integer>> answer = new ArrayList<>();
-//        List<Integer> current = new ArrayList<>();
-//        boolean[] visited = new boolean[nums.length];
-//
-//        p01_01_backtracking(nums, answer, current, visited);
-//
-//        return answer.stream()
-//                .map(innerList -> innerList.stream()
-//                        .mapToInt(Integer::intValue)
-//                        .toArray())
-//                .toArray(int[][]::new);
-//    }
-//
-//    void p01_01_backtracking(int[] nums, List<List<Integer>> answer, List<Integer> current, boolean[] visited) {
-//        if (current.size() == nums.length) {
-//            answer.add(new ArrayList<>(current));
-//            return;
-//        }
-//
-//        for (int i = 0; i < nums.length; i++) {
-//            if (visited[i]) {
-//                continue;
-//            }
-//
-//            visited[i] = true;
-//            current.add(nums[i]);
-//
-//            p01_01_backtracking(nums, answer, current, visited);
-//
-//            visited[i] = false;
-//            current.remove(current.size() - 1);
-//        }
-//
-//    }
-//
-//    /**
-//     * 백트래킹 감잡기 : (1,2,3)에서 나올 수 있는 모든 부분집합구하기
-//     */
-//    @Test
-//    void p0_02() {
-//        int n = 3; // 1 ~ N 까지의 숫자로 모든 부분집합 구하기
-//        int[][] actual = p0_02Solution(n);
-//
-//        // Junit 결과 확인용 출력
-//        Arrays.stream(actual)
-//                .map(Arrays::toString)
-//                .forEach(System.out::println);
-//    }
-//
-//    int[][] p0_02Solution(int n) {
-//        List<List<Integer>> answer = new ArrayList<>();
-//        List<Integer> current = new ArrayList<>();
-//
-//        p0_02backtracking(1, n, answer, current);
-//
-//        return answer.stream()
-//                .map(innerList -> innerList.stream()
-//                        .mapToInt(Integer::intValue)
-//                        .toArray())
-//                .toArray(int[][]::new);
-//    }
-//
-//    void p0_02backtracking(int n, int max, List<List<Integer>> answer, List<Integer> current) {
-//        answer.add(new ArrayList<>(current));
-//        for (int i = n; i <= max; i++) {
-//            current.add(i);
-//            p0_02backtracking(i + 1, max, answer, current);
-//
-//            current.removeLast();
-//        }
-//    }
-//
-//    /**
-//     * 백트래킹 감잡기 : 조합 (1~4까지의 숫자 중 2개 뽑는 조합)
-//     */
-//    @Test
-//    void p0_03() {
-//        int n = 4; // 1 ~ N 까지의 숫자
-//        int m = 2; // 조합 할 개수
-//        int[][] actual = p02_03Solution(n, m);
-//
-//        // Junit 결과 확인용 출력
-//        Arrays.stream(actual)
-//                .map(Arrays::toString)
-//                .forEach(System.out::println);
-//    }
-//
-//    int[][] p02_03Solution(int n,int m) {
-//
-//        List<List<Integer>> answer = new ArrayList<>();
-//        List<Integer> current = new ArrayList<>();
-//
-//        p0_03backtracking(1, n, m, answer, current);
-//
-//        return answer.stream()
-//                .map(innerList -> innerList.stream()
-//                        .mapToInt(Integer::intValue)
-//                        .toArray())
-//                .toArray(int[][]::new);
-//    }
-//
-//    void p0_03backtracking(int start, int n, int m, List<List<Integer>> answer, List<Integer> current) {
-//        if (current.size() == m) {
-//            answer.add(new ArrayList<>(current));
-//            return;
-//        }
-//
-//        for (int i = start; i <= n; i++) {
-//            current.add(i);
-//
-//            p0_03backtracking(i + 1, n, m, answer, current);
-//            current.removeLast();
-//        }
-//    }
-//
-//
-//    /**
-//     * 백트래킹 감잡기 : 부분집합 합(책에 있음), N퀸 문제
-//     */
+    /**
+     * 정수 n, k가 주어졌을 때, 1~n까지 숫자 중 k개를 뽑는 모든 조합을 구하세요.
+     *
+     *
+     *     출력: [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]
+     */
+    @Test
+    void p15() {
+        int n = 4;
+        int k = 2;
+
+        p15Solution(n, k);
+    }
+    void p15Solution(int n, int k) {
+        List<List<Integer>> answer = new ArrayList<>();
+        List<Integer> current = new ArrayList<>();
+        p15backtracking(1, n,k, answer, current);
+
+        for (List<Integer> comb : answer) {
+            System.out.println(comb);
+        }
+    }
+    void p15backtracking(int start, int n, int k, List<List<Integer>> answer, List<Integer> current) {
+        if (current.size() == k) {
+            answer.add(new ArrayList<>(current));
+            return;
+        }
+
+        for (int i = start; i <= n; i++) {
+            current.add(i);
+            p15backtracking(i + 1, n, k, answer, current);
+            current.removeLast();
+        }
+    }
+
+    /**
+     * ✅ 문제 2. 순열 구하기 (Permutation)     *
+     *     설명: 정수 배열 nums가 주어졌을 때, 모든 가능한 순열을 구하세요.     *
+     *     입력: nums = [5,9,2]     *
+     *     출력: [[5,9,2], [5,2,9], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+     */
+    @Test
+    void p16(){
+        int[] nums = {5,9,2};
+        p16Solution(nums);
+    }
+    void p16Solution(int[] nums) {
+        List<List<Integer>> answer = new ArrayList<>();
+        List<Integer> current = new ArrayList<>();
+        boolean[] visited = new boolean[nums.length];
+
+        p16backtracking(nums, nums.length, answer, current, visited);
+        for (List<Integer> a : answer) {
+            System.out.println(a);
+        }
+    }
+
+    private void p16backtracking(int[] nums, int length, List<List<Integer>> answer, List<Integer> current, boolean[] visited) {
+        if (current.size() == length) {
+            answer.add(new ArrayList<>(current));
+            return;
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            if (!visited[i]) {
+                visited[i] = true;
+                current.add(nums[i]);
+                p16backtracking(nums, length, answer, current, visited);
+                visited[i] = false;
+                current.removeLast();
+            }
+        }
+
+    }
+
+    /**
+     * ✅ 문제 3. 부분집합 구하기 (Subsets)
+     *     설명: 정수 배열 nums가 주어졌을 때, 가능한 모든 부분집합을 구하세요.
+     *     입력: nums = [1, 2]
+     *     출력: [[], [1], [2], [1, 2]]
+     */
+    @Test
+    void p17() {
+        int[] nums = {1, 2,3};
+        p17Solution(nums);
+    }
+
+    void p17Solution(int[] nums) {
+        List<List<Integer>> answer = new ArrayList<>();
+        List<Integer> current = new ArrayList<>();
+
+        p17backtracking(0, nums, answer, current);
+
+        for (List<Integer> a : answer) {
+            System.out.println(a);
+        }
+    }
+    void p17backtracking(int start, int[] nums, List<List<Integer>> answer, List<Integer> current) {
+        answer.add(new ArrayList<>(current)); // 언제나 지금 상태 저장
+
+        for (int i = start; i < nums.length; i++) {
+            current.add(nums[i]);
+            p17backtracking(i+1, nums, answer, current);
+            current.removeLast();
+        }
+    }
+
+    /**
+     * ✅ 문제 4. 대소문자 조합 만들기 (Letter Case Permutation)
+     *     설명: 영문자와 숫자가 섞인 문자열 s가 주어질 때, 영문자의 대소문자를 바꿔 만들 수 있는 모든 문자열 조합을 구하세요.
+     *     입력: "a1b2"
+     *     출력: ["a1b2", "a1B2", "A1b2", "A1B2"]
+     */
+    @Test
+    void p18() {
+        String input = "a1b2";
+
+        p18Solution(input);
+    }
+
+    void p18Solution(String input) {
+        List<String> answer = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+
+        p18backtracking(0, input, answer, current);
+
+        for (String a : answer) {
+            System.out.println(a);
+        }
+    }
+
+    void p18backtracking(int start, String input, List<String> answer, StringBuilder current) {
+        if (current.length() == input.length()) {
+            answer.add(current.toString());
+            return;
+        }
+
+        char c = input.charAt(start);
+        if(Character.isAlphabetic(c)) {
+            current.append(Character.toLowerCase(c));
+            p18backtracking(start + 1, input, answer, current);
+            current.deleteCharAt(current.length() - 1);
+
+            current.append(Character.toUpperCase(c));
+            p18backtracking(start + 1, input, answer, current);
+            current.deleteCharAt(current.length() - 1);
+        } else {
+            current.append(c);
+            p18backtracking(start + 1, input, answer, current);
+            current.deleteCharAt(current.length() - 1);
+        }
+    }
+
+    /**
+     * ✅ 문제 5. Combination Sum
+     *     설명: 정수 배열 candidates와 목표값 target이 주어졌을 때, 숫자를 중복 사용해서 합이 target이 되는 모든 조합을 구하세요.
+     *     입력: candidates = [2,3,6,7], target = 7
+     *     출력: [[2,2,3], [7]]
+     */
+    @Test
+    void p19() {
+        int[] nums = {2,3,6,7};
+        int target = 7;
+
+        p19Solution(nums, target);
+    }
+
+    void p19Solution(int[] nums, int target) {
+        List<List<Integer>> answer = new ArrayList<>();
+        List<Integer> current = new ArrayList<>();
+
+        p19backtracking(0, nums, target, answer, current, 0);
+
+        for (List<Integer> a : answer) {
+            System.out.println(a);
+        }
+    }
+
+    void p19backtracking(int start, int[] nums, int target, List<List<Integer>> answer, List<Integer> current, int sum) {
+        if (sum == target) {
+            answer.add(new ArrayList<>(current));
+            return;
+        }
+
+        if (sum > target) {
+            return;
+        }
+
+        for (int i = start; i < nums.length; i++) {
+            current.add(nums[i]);
+            p19backtracking(i, nums, target, answer, current, sum + nums[i]);
+            current.removeLast();
+        }
+    }
+
+    /**
+     * ✅ 문제 6. 전화번호 문자 조합 (Phone Letter Combination)     *
+     *     설명: 숫자 문자열이 주어졌을 때, 각 숫자에 해당하는 문자 조합의 모든 가능한 문자열을 구하세요. (ex. 숫자 2 → a, b, c)     *
+     *     입력: "23"
+     *     출력: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+     */
+    @Test
+    void p20() {
+        String s = "23";
+        p20Solution(s);
+    }
+    void p20Solution(String s) {
+        List<String> answer = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+
+        Map<Character, String> map = Map.of(
+                '2', "abc",
+                '3', "def",
+                '4', "ghi",
+                '5', "jkl",
+                '6', "mno",
+                '7', "pqrs",
+                '8', "tuv",
+                '9', "wxyz"
+        );
+
+        p20backtracking(s, 0, map, answer, current);
+
+        for (String a : answer) {
+            System.out.println(a);
+        }
+    }
+
+    void p20backtracking(String digits, int idx, Map<Character, String> map, List<String> answer, StringBuilder current) {
+        if (current.length() == digits.length()) {
+            answer.add(current.toString());
+            return;
+        }
+
+        String alphabets = map.get(digits.charAt(idx));
+        for (int i = 0; i < alphabets.length(); i++) {
+            current.append(alphabets.charAt(i));
+            p20backtracking(digits, idx + 1, map, answer, current);
+            current.deleteCharAt(current.length() - 1);
+        }
+
+    }
+
+    /**
+     * ✅ 문제 7. 괄호 만들기 (Generate Parentheses)
+     *     설명: 정수 n이 주어졌을 때, n쌍의 올바른 괄호 조합을 모두 출력하세요.
+     *     입력: n = 2
+     *     출력:
+     *     [
+     *          "(())",
+     *          "()()"
+     *     ]
+     *     입력: n = 3
+     *     출력:
+     *     [
+     *          "((()))",
+     *          "(()())",
+     *          "(())()",
+     *          "()(())",
+     *          "()()()"
+     *      ]
+     */
+    @Test
+    void p21() {
+        int n = 3;
+
+        p21Solution(n);
+    }
+
+    void p21Solution(int n) {
+        List<String> answer = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+
+        p21backtracking(0, 0, n, answer, current);
+
+        for (String a : answer) {
+            System.out.println(a);
+        }
+    }
+
+    void p21backtracking(int left, int right, int n, List<String> answer, StringBuilder current) {
+        if (current.length() == (n * 2)) {
+            answer.add(current.toString());
+            return;
+        }
+
+        if (left < n) {
+            current.append("(");
+            p21backtracking(left + 1, right, n, answer, current);
+            current.deleteCharAt(current.length() - 1);
+        }
+        if (right < left) {
+            current.append(")");
+            p21backtracking(left, right + 1, n, answer, current);
+            current.deleteCharAt(current.length() - 1);
+        }
+    }
 
 
 
