@@ -3,7 +3,7 @@ package com.jaeshim.java.codingtest.study.programmers;
 import org.junit.jupiter.api.Test;
 
 import java.math.*;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -1976,6 +1976,370 @@ public class lv0 {
         LocalDate dt2 = LocalDate.of(date2[0], date2[1], date2[2]);
 
         return dt1.isBefore(dt2) ? 1 : 0;
+    }
+
+    /**
+     * 커피 심부름 (https://school.programmers.co.kr/learn/courses/30/lessons/181837)
+     */
+    @Test
+    void p78() {
+        String[] order = {"cafelatte", "americanoice", "hotcafelatte", "anything"};
+        int expect = 19000;
+
+        int actual = p78Solution(order);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p78Solution(String[] order) {
+        int sum = 0;
+
+        for (String o : order) {
+            String menu = o.toLowerCase();
+            if (menu.contains("americano") || menu.equals("anything")) {
+                sum += 4500;
+            } else {
+                sum += 5000;
+            }
+        }
+
+        return sum;
+    }
+
+    /**
+     * 그림 확대 (https://school.programmers.co.kr/learn/courses/30/lessons/181836)
+     */
+    @Test
+    void p79() {
+        String[] picture = {
+                ".xx...xx.",
+                "x..x.x..x",
+                "x...x...x",
+                ".x.....x.",
+                "..x...x..",
+                "...x.x...",
+                "....x...."
+        };
+        int k = 2;
+        String[] expect = {
+                "..xxxx......xxxx..",
+                "..xxxx......xxxx..",
+                "xx....xx..xx....xx",
+                "xx....xx..xx....xx",
+                "xx......xx......xx",
+                "xx......xx......xx",
+                "..xx..........xx..",
+                "..xx..........xx..",
+                "....xx......xx....",
+                "....xx......xx....",
+                "......xx..xx......",
+                "......xx..xx......", "" +
+                "........xx........",
+                "........xx........"};
+
+        String[] actual = p79Solution(picture, k);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    String[] p79Solution(String[] picture, int k) {
+        List<String> answer = new ArrayList<>();
+
+        for (String p : picture) {
+            StringBuilder sb = new StringBuilder();
+
+            for (char c : p.toCharArray()) {
+                char[] ch = new char[k];
+                Arrays.fill(ch, c);
+                sb.append(ch);
+            }
+
+            for (int i = 0; i < k; i++) {
+                answer.add(sb.toString());
+            }
+        }
+
+        return answer.toArray(new String[0]);
+    }
+
+    /**
+     * 조건에 맞게 수열 변환하기 3 (https://school.programmers.co.kr/learn/courses/30/lessons/181835)
+     */
+    @Test
+    void p80() {
+        int[] arr = {1, 2, 3, 100, 99, 98};
+        int k = 3;
+        int[] expect = {3, 6, 9, 300, 297, 294};
+
+        int[] actual = p80Solution(arr, k);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int[] p80Solution(int[] arr, int k) {
+        return Arrays.stream(arr)
+                .map(a -> {
+                    if (k % 2 == 0) {
+                        a += k;
+                    } else {
+                        a *= k;
+                    }
+                    return a;
+                }).toArray();
+    }
+
+    /**
+     * I로 만들기 (https://school.programmers.co.kr/learn/courses/30/lessons/181834)
+     */
+    @Test
+    void p81(){
+        String myString = "jjnnllkkmm";
+        String expect = "llnnllllmm";
+
+        String actual = p81Solution(myString);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    String p81Solution(String myString) {
+        return myString.chars()
+                .mapToObj(c -> String.valueOf((char) c < 'l' ? 'l' : (char)c))
+                .collect(Collectors.joining());
+    }
+
+    /**
+     * 특별한 이차원 배열 1 (https://school.programmers.co.kr/learn/courses/30/lessons/181833)
+     */
+    @Test
+    void p82() {
+        int n = 3;
+        int[][] expect = {
+                {1, 0, 0},
+                {0, 1, 0},
+                {0, 0, 1}
+        };
+
+        int[][] actual = p82Solution(n);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int[][] p82Solution(int n) {
+        int[][] answer = new int[n][n];
+
+        for (int i = 0; i < n; i++) {
+            answer[i][i] = 1;
+        }
+
+        return answer;
+    }
+
+    /**
+     * 정수를 나선형으로 배치하기 (https://school.programmers.co.kr/learn/courses/30/lessons/181832)
+     */
+    @Test
+    void p83() {
+        int n = 4;
+        int[][] expect = {
+                {1, 2, 3, 4},
+                {12, 13, 14, 5},
+                {11, 16, 15, 6},
+                {10, 9, 8, 7}
+        };
+
+        int[][] actual = p83Solution(n);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int[][] p83Solution(int n) {
+        int[][] answer = new int[n][n];
+        boolean[][] visited = new boolean[n][n];
+        int[] dx = {0, 1, 0, -1};
+        int[] dy = {1, 0, -1, 0};
+        int next = 0;
+        int current = 1;
+        int limit = n * n;
+
+        int x = 0;
+        int y = 0;
+
+        while (current <= limit) {
+            answer[x][y] = current;
+            visited[x][y] = true;
+
+            int nx = x + dx[next % 4];
+            int ny = y + dy[next % 4];
+
+            if (nx < 0 || nx >= n || ny < 0 || ny >= n || visited[nx][ny]) {
+                next++;
+                nx = x + dx[next % 4];
+                ny = y + dy[next % 4];
+            }
+
+            x = nx;
+            y = ny;
+
+            current++;
+        }
+        return answer;
+    }
+
+    /**
+     * 특별한 이차원 배열 2 (https://school.programmers.co.kr/learn/courses/30/lessons/181831)
+     */
+    @Test
+    void p84() {
+        int[][] arr = {
+                {5, 192, 33},
+                {192, 72, 95},
+                {33, 95, 999}
+        };
+        int expect = 1;
+        int actual = p84Solution(arr);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p84Solution(int[][] arr) {
+        int answer = 1;
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr.length; j++) {
+                if(arr[i][j] != arr[j][i]) {
+                    return 0;
+                }
+            }
+
+        }
+        return answer;
+    }
+
+    /**
+     * 정사각형으로 만들기 (https://school.programmers.co.kr/learn/courses/30/lessons/181830)
+     */
+    @Test
+    void p85(){
+        int[][] arr = {
+                {572, 22, 37},
+                {287, 726, 384},
+                {85, 137, 292},
+                {487, 13, 876}
+        };
+        int[][] expect = {
+                {572, 22, 37, 0},
+                {287, 726, 384, 0},
+                {85, 137, 292, 0},
+                {487, 13, 876, 0}
+        };
+
+        int[][] actual = p85Solution(arr);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int[][] p85Solution(int[][] arr) {
+        int row = arr.length;
+        int col = arr[0].length;
+
+        int[][] answer;
+
+        if(row > col) {
+            answer = new int[row][row];
+        } else {
+            answer = new int[col][col];
+        }
+
+        for (int i = 0; i < row; i++) {
+            System.arraycopy(arr[i], 0, answer[i], 0, col);
+        }
+
+
+        return answer;
+    }
+
+    /**
+     * 이차원 배열 대각선 순회하기 (https://school.programmers.co.kr/learn/courses/30/lessons/181829)
+     */
+    @Test
+    void p86(){
+        int[][] board = {
+                {0, 1, 2},
+                {1, 2, 3},
+                {2, 3, 4},
+                {3, 4, 5}
+        };
+        int k = 2;
+        int expect = 8;
+        int actual = p86Solution(board, k);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p86Solution(int[][] board, int k) {
+        int sum = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (i + j <= k) {
+                    sum += board[i][j];
+                }
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * 옹알이 (https://school.programmers.co.kr/learn/courses/30/lessons/120956)
+     */
+    @Test
+    void p87() {
+        String[] babbling = {"aya", "yee", "u", "maa", "wyeoo"};
+        int expect = 1;
+
+        int actual = p87Solution(babbling);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p87Solution(String[] babbling) {
+        int answer = 0;
+        List<String> list = List.of("aya", "ye", "woo", "ma");
+
+        for (String b : babbling) {
+            for (String l : list) {
+                if (b.contains(l)) {
+                    b = b.replaceAll(l, "1");
+                }
+            }
+
+            b = b.replaceAll("1", "");
+
+            if (b.isEmpty()) {
+                answer++;
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * 다음에 올 숫자 (https://school.programmers.co.kr/learn/courses/30/lessons/120924)
+     */
+    @Test
+    void p88() {
+//        int[] common = {1, 2, 3, 4};
+//        int expect = 5;
+
+        int[] common = {2, 4, 8};
+        int expect = 16;
+
+        int actual = p88Solution(common);
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    int p88Solution(int[] common) {
+        int answer = 0;
+
+        int x = common[1] - common[0];
+        int y = common[2] - common[1];
+
+        // 등차수열
+        if (x == y) {
+            answer = common[common.length - 1] + x;
+        } else {
+            int v = y / x;
+            answer = common[common.length - 1] * v;
+        }
+
+        return answer;
     }
 
 }
