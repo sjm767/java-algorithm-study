@@ -89,15 +89,19 @@ public static int gcd(int a, int b) {
     return gcd(b, a % b);
 }
 //n개의 수에 대해 최대공약수 구하기
-        for(int i=1;i<b.size();i++){
-            gcd = GCD(gcd, b.get(i));
-        }
+    int result = nums[0];
+    for (int i = 1; i < nums.length; i++) {
+        result = gcd(result, nums[i]);
+    }
+    return result;
 //최소공배수 구하기 (최대공약수를 활용할 수 있음)
 (a*b) / GCD(a,b)
 //n개의 수에 대해 최소공배수 구하기
-        for (int i = 1; i < a.size(); i++) {
-            lcm = (lcm * a.get(i)) / GCD(lcm, a.get(i));
-        }
+    int result = nums[0];
+    for (int i = 1; i < nums.length; i++) {
+        result = lcm(result, nums[i]);
+    }
+    return result;
 // 배열 범위로 복사하기
 int[] subset = Arrays.copyOfRange(array, i - 1, j);
 

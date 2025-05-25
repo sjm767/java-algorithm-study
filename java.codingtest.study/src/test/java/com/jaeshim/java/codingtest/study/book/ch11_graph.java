@@ -1,4 +1,4 @@
-package com.jaeshim.java.codingtest.study;
+package com.jaeshim.java.codingtest.study.book;
 
 import org.junit.jupiter.api.Test;
 

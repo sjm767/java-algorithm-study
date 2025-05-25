@@ -1,6 +1,5 @@
-package com.jaeshim.java.codingtest.study;
+package com.jaeshim.java.codingtest.study.book;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

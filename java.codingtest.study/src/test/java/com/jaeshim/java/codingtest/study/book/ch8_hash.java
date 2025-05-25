@@ -1,10 +1,9 @@
-package com.jaeshim.java.codingtest.study;
+package com.jaeshim.java.codingtest.study.book;
 
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;

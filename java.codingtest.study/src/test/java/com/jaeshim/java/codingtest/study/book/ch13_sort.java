@@ -1,4 +1,4 @@
-package com.jaeshim.java.codingtest.study;
+package com.jaeshim.java.codingtest.study.book;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,15 +22,14 @@ class ch13_sort {
 
     }
     void p000Solution(int[] nums) {
-
         for (int i = 1; i < nums.length; i++) {
             int key = nums[i];
-            int j = i - 1;
-            while(j >= 0 && nums[j] > key) {
-                nums[j+1] = nums[j];
-                j--;
+            int current = i - 1;
+            while (current >= 0 && key < nums[current]) {
+                nums[current + 1] = nums[current];
+                current--;
             }
-            nums[j+1] = key;
+            nums[current+1] = key;
         }
     }
 
